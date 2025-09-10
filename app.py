@@ -1,36 +1,12 @@
 import streamlit as st
-from os import getenv
-from openai import OpenAI
-from google import genai
-from xai_sdk import Client
 
-st.header("Welcome to Chatified!")
-st.title("What can I do for you Today ?")
+main_page = st.Page("main.py", title="Home Page", icon=":material/apps:")
+gpt4 = st.Page("gpt4.py", title="GPT-4 Chat", icon=":material/api:")
+gemini= st.Page("gemini.py", title="Gemini Chat", icon=":material/apps:")
+groq = st.Page("groq.py", title="Groq Chat", icon=":material/apps:")
 
-gemini_client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+img_gen = st.Page("img_gen.py", title="Generate Image", icon=":material/apps:")
 
-model = st.selectbox("Choose your model", ["gemini-2.5-flash", "gpt-4o", "gpt-3", "grok-4"])
-st.session_state["model"] = model
+page = st.navigation([main_page, gpt4, gemini, groq, img_gen], position='top', expanded=True)
 
-if "messages" not in st.session_state :
-    st.session_state["messages"] = []
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-
-if prompt := st.chat_input("Ask me Here"):
-    st.session_state.messages.append({"role" : "user", "content" : prompt})
-    
-    with st.chat_message('user') :
-        st.write(prompt)
-
-    content = st.session_state.messages
-    response = gemini_client.models.generate_content(
-        model= "gemini-2.5-flash",
-        contents= content
-    )
-
-    with st.chat_message("assistant"):
-        st.markdown(response.text)
+page.run()
